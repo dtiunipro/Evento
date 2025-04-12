@@ -1,0 +1,13 @@
+header{
+
+  width: 150px;
+  height: 80px;
+
+  img{
+    width: 150px;
+    height: 80px;
+    object-fit: contain;
+  }
+
+
+}

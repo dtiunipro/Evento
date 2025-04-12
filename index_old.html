@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sorteador de Nomes</title>
+  <style>
+    body {
+      background-color: #08c;
+      font-family: 'Arial', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      color: #fff;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 500px;
+    }
+    h1 {
+      text-align: center;
+    }
+    input[type="text"],
+    input[type="number"] {
+      width: calc(100% - 22px);
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      font-size: 1em;
+    }
+    .botoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #fff;
+      color: #08c;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #f0f0f0;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+    ul li {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 8px;
+      margin-bottom: 5px;
+      border-radius: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btnExcluir {
+      background: rgba(255, 255, 255, 0.8);
+      color: #08c;
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .resultado {
+      margin-top: 20px;
+      font-size: 1.2em;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.1);
+      padding: 10px;
+      border-radius: 5px;
+      min-height: 30px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Sorteador de Nomes</h1>
+    <input type="text" id="nomeInput" placeholder="Digite um nome" />
+    <div class="botoes">
+      <button id="btnAdd">Adicionar</button>
+      <button id="btnLimpar">Limpar Lista</button>
+      <button id="btnImportar">Importar Lista</button>
+      <button id="btnExportar">Exportar Lista</button>
+      <input type="file" id="arquivoInput" accept=".txt,.csv" style="display: none" />
+    </div>
+
+    <ul id="listaNomes"></ul>
+
+    <hr style="border: 1px solid rgba(255,255,255,0.3); margin:20px 0;" />
+
+    <input type="number" id="quantosNomes" placeholder="Quantos nomes sortear?" />
+    <button id="btnSortear" style="width: 100%; margin-top: 10px">Sortear</button>
+
+    <div class="resultado" id="resultado">Resultado aparecerá aqui...</div>
+  </div>
+
+  <script>
+    let nomes = [];
+
+    const nomeInput = document.getElementById("nomeInput");
+    const btnAdd = document.getElementById("btnAdd");
+    const btnLimpar = document.getElementById("btnLimpar");
+    const listaNomes = document.getElementById("listaNomes");
+    const btnSortear = document.getElementById("btnSortear");
+    const resultado = document.getElementById("resultado");
+    const quantosNomes = document.getElementById("quantosNomes");
+
+    const btnImportar = document.getElementById("btnImportar");
+    const btnExportar = document.getElementById("btnExportar");
+    const arquivoInput = document.getElementById("arquivoInput");
+
+    window.onload = () => {
+      const salvos = localStorage.getItem("nomes");
+      if (salvos) {
+        nomes = JSON.parse(salvos);
+        atualizarLista();
+      }
+    };
+
+    function salvarLocalStorage() {
+      localStorage.setItem("nomes", JSON.stringify(nomes));
+    }
+
+    function atualizarLista() {
+      listaNomes.innerHTML = "";
+      nomes.forEach((nome, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = `
+          ${index + 1}. ${nome}
+          <button class="btnExcluir" onclick="removerNome(${index})">Excluir</button>
+        `;
+        listaNomes.appendChild(li);
+      });
+      salvarLocalStorage();
+    }
+
+    function removerNome(index) {
+      nomes.splice(index, 1);
+      atualizarLista();
+    }
+
+    btnAdd.addEventListener("click", () => {
+      const novoNome = nomeInput.value.trim();
+      if (novoNome !== "") {
+        nomes.push(novoNome);
+        nomeInput.value = "";
+        atualizarLista();
+      } else {
+        alert("Por favor, digite um nome válido!");
+      }
+    });
+
+    btnLimpar.addEventListener("click", () => {
+      if (confirm("Tem certeza que deseja limpar a lista?")) {
+        nomes = [];
+        atualizarLista();
+        resultado.textContent = "Resultado aparecerá aqui...";
+        localStorage.removeItem("nomes");
+      }
+    });
+
+    btnSortear.addEventListener("click", () => {
+      if (nomes.length === 0) {
+        alert("A lista de nomes está vazia!");
+        return;
+      }
+
+      let quantidade = parseInt(quantosNomes.value);
+      if (isNaN(quantidade) || quantidade < 1) {
+        quantidade = 1;
+      }
+      if (quantidade > nomes.length) {
+        quantidade = nomes.length;
+      }
+
+      let passo = 0;
+      const maxPassos = 20;
+      const delayInicial = 100;
+      const nomesTemp = [...nomes];
+      const sorteados = [];
+
+      const animar = () => {
+        if (passo < maxPassos) {
+          const nomeAleatorio =
+            nomesTemp[Math.floor(Math.random() * nomesTemp.length)];
+          resultado.textContent = `Sorteando: ${nomeAleatorio}...`;
+          passo++;
+          setTimeout(animar, delayInicial + passo * 15);
+        } else {
+          const embaralhados = nomesTemp.sort(() => Math.random() - 0.5);
+          for (let i = 0; i < quantidade; i++) {
+            sorteados.push(embaralhados[i]);
+          }
+          nomes = nomes.filter((nome) => !sorteados.includes(nome));
+          atualizarLista();
+          resultado.textContent = `🎉 Nomes sorteados: ${sorteados.join(", ")}`;
+        }
+      };
+
+      animar();
+    });
+
+    nomeInput.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") btnAdd.click();
+    });
+
+    quantosNomes.addEventListener("keyup", (e) => {
+      if (e.key === "Enter") btnSortear.click();
+    });
+
+    // Importar
+    btnImportar.addEventListener("click", () => {
+      arquivoInput.click();
+    });
+
+    arquivoInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const conteudo = e.target.result;
+        let novosNomes = [];
+
+        if (conteudo.includes(",")) {
+          novosNomes = conteudo.split(",").map((n) => n.trim());
+        } else {
+          novosNomes = conteudo.split("\n").map((n) => n.trim());
+        }
+
+        nomes.push(...novosNomes.filter((n) => n !== ""));
+        atualizarLista();
+      };
+      reader.readAsText(file);
+    });
+
+    // Exportar
+    btnExportar.addEventListener("click", () => {
+      const conteudo = nomes.join("\n");
+      const blob = new Blob([conteudo], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "lista_nomes.txt";
+      a.click();
+
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>

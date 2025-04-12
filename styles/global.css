@@ -1,0 +1,39 @@
+:root {
+  /* Typography */
+
+  /* Backgrounds */
+  --bg-color: #0088cc;
+  --text-color: #fff;
+
+  /* Logos */
+  --logo: url(../assets/logos/unipro.png);
+}
+
+
+.arcacenter{
+  --bg-color: #c60c30;
+  --logo: url(../assets/logos/arcacenter.png);
+}
+
+.univer{
+  --bg-color: #04233B;
+  --logo: url(../assets/logos/univer.png);
+
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  /* background: color image repeat position/size */
+  background: var(--bg-color);
+  height: 100vh;
+  color: var(--text-color);
+}
+
+.container{
+  padding: 24px;
+}
