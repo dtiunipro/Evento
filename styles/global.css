@@ -115,7 +115,13 @@ main {
   place-items: center;
   margin-block: 32px;
 
-  .content,
+  .content:first-child{
+    margin-bottom: 32px;
+  }
+
+
+
+    .content,
   .list-name {
     padding-inline: 16px;
     margin-inline: auto;
@@ -239,7 +245,6 @@ main {
   .modal-content p {
     font: var(--h1);
   }
-
   /* Botão de fechar */
   .close-modal {
     position: absolute;
@@ -271,14 +276,21 @@ main {
     }
   }
 
+
+#ultimosNomes{
+  height: 200px;
+  overflow-y: scroll;
+}
+
   .list-name {
     grid-area: lista;
-    height: 600px;
+    height: 720px;
 
-    overflow-y: scroll;
 
     ul {
       list-style: none;
+    overflow-y: scroll;
+
 
       li:last-child {
         margin-bottom: 16px;
