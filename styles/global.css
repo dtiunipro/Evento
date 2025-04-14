@@ -1,26 +1,31 @@
 :root {
   /* Typography */
+  --font-family: "Inter", sans-serif;
+  --h1: 800 24px/135% var(--font-family);
+  --text-input: 600 16px/140% var(--font-family);
+  --text: 400 16px/140% var(--font-family);
+  --text-sm: 400 14px/160% var(--font-family);
 
-  /* Backgrounds */
+  /* Cores padrão */
   --bg-color: #0088cc;
-  --text-color: #fff;
+  --text-color: #333;
 
-  /* Logos */
+  /* Logo padrão */
   --logo: url(../assets/logos/unipro.png);
 }
 
-
-.arcacenter{
+/* Temas por organização */
+.arcacenter {
   --bg-color: #c60c30;
   --logo: url(../assets/logos/arcacenter.png);
 }
 
-.univer{
-  --bg-color: #04233B;
+.univer {
+  --bg-color: #04233b;
   --logo: url(../assets/logos/univer.png);
-
 }
 
+/* Reset & Base */
 * {
   margin: 0;
   padding: 0;
@@ -28,12 +33,169 @@
 }
 
 body {
-  /* background: color image repeat position/size */
-  background: var(--bg-color);
   height: 100vh;
   color: var(--text-color);
+  font: var(--text);
+  overflow: hidden;
+  transition: background 0.5s;
+  font-optical-sizing: auto;
 }
 
-.container{
+img {
+  max-width: 100%;
+}
+
+ul li {
+  list-style-type: disc;
+}
+
+button,
+input {
+  border: none;
+  outline: 0;
+}
+
+.container {
+  max-width: 1280px;
+  margin-inline: auto;
+}
+
+/* Header */
+header {
+  width: 100%;
+  height: 100px;
   padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg-color);
+
+  .logo {
+    width: 150px;
+    height: 80px;
+    background: var(--logo) no-repeat left center / contain;
+  }
+}
+
+/* Main layout */
+main {
+  margin-block: 24px;
+  display: grid;
+  column-gap: 24px;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas: "sorteador lista";
+  grid-auto-flow: row;
+  grid-row: auto;
+
+  .content,
+  .list-name {
+    padding-inline: 16px;
+    margin-inline: auto;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    width: 600px;
+
+    h1 {
+      font: var(--h1);
+      text-align: center;
+      padding-block: 24px;
+    }
+  }
+
+  .sorteador {
+    grid-area: sorteador;
+
+    .content {
+      input {
+        width: 100%;
+        height: 50px;
+        padding-inline: 16px;
+        border: 1px solid;
+        border-radius: 16px;
+        font: var(--text-input);
+        text-transform: uppercase;
+        color: #333;
+      }
+
+      #arquivoInput {
+        display: none;
+      }
+
+      button {
+        height: 70px;
+        padding: 16px;
+        border-radius: 16px;
+        background: var(--bg-color);
+        color: #fff;
+        font: var(--text-input);
+        cursor: pointer;
+        transition: background 0.3s;
+
+        &:hover {
+          opacity: 0.85;
+        }
+      }
+
+      .btn-group {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-block: 24px;
+
+        button {
+          width: 130px;
+        }
+      }
+    }
+  }
+
+  .sortear-group {
+    display: flex;
+    justify-content: space-between;
+
+    button {
+      width: calc(100% - 10px);
+    }
+
+    input[type="number"] {
+      width: 130px;
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+      }
+    }
+  }
+
+  .list-name {
+    grid-area: lista;
+
+    ul li {
+      padding-block: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-transform: uppercase;
+      list-style: none;
+      border-bottom: 1px solid var(--bg-color);
+
+      .btnExcluir {
+        width: 30px;
+        height: 30px;
+        background: transparent url(../assets/icons/delete.svg) no-repeat left center / contain;
+        transition: background 0.5s;
+
+        &:hover {
+          cursor: pointer;
+          background: url(../assets/icons/delete_hover.svg) no-repeat left center / contain;
+        }
+      }
+    }
+  }
+}
+
+/* Utilitários (Utility-first style) */
+.grid {
+  display: grid;
 }
