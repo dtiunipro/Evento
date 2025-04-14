@@ -2,18 +2,20 @@
 let nomes = [];
 
 const dom = {
-    nomeInput: document.getElementById("nomeInput"),
-    btnAdd: document.getElementById("btnAdd"),
-    btnLimpar: document.getElementById("btnLimpar"),
-    listaNomes: document.getElementById("listaNomes"),
-    btnSortear: document.getElementById("btnSortear"),
-    quantosNomes: document.getElementById("qtnNomes"),
-    btnImportar: document.getElementById("btnImportar"),
-    btnExportar: document.getElementById("btnExportar"),
-    arquivoInput: document.getElementById("arquivoInput"),
-    modal: document.getElementById("resultadoModal"),
-    modalTexto: document.getElementById("resultadoTexto"),
-    fecharModal: document.getElementById("fecharModal")
+  nomeInput: document.getElementById("nomeInput"),
+  btnAdd: document.getElementById("btnAdd"),
+  btnLimpar: document.getElementById("btnLimpar"),
+  listaNomes: document.getElementById("listaNomes"),
+  btnSortear: document.getElementById("btnSortear"),
+  quantosNomes: document.getElementById("qtnNomes"),
+  btnImportar: document.getElementById("btnImportar"),
+  btnExportar: document.getElementById("btnExportar"),
+  arquivoInput: document.getElementById("arquivoInput"),
+  modal: document.getElementById("resultadoModal"),
+  modalTexto: document.getElementById("resultadoTexto"),
+  fecharModal: document.getElementById("fecharModal"),
+  listaVazia: document.getElementById("listaVazia"),
+  themeSelector: document.getElementById("theme")
 };
 
 // ==================== Funções ====================
@@ -34,11 +36,9 @@ const atualizarLista = () => {
   dom.listaNomes.innerHTML = "";
 
   if (nomes.length === 0) {
-    // Exibe a mensagem de lista vazia
-    document.getElementById("listaVazia").style.display = "block";
+    dom.listaVazia.style.display = "block";
   } else {
-    // Oculta a mensagem e exibe a lista de nomes
-    document.getElementById("listaVazia").style.display = "none";
+    dom.listaVazia.style.display = "none";
   }
 
   nomes.forEach((nome, index) => {
@@ -78,61 +78,62 @@ const limparLista = () => {
 dom.modal.style.display = "none";
 
 const sortearNomes = () => {
-    if (nomes.length === 0) {
-      alert("A lista de nomes está vazia!");
-      return;
-    }
-  
-    let quantidade = parseInt(dom.quantosNomes.value);
-    if (isNaN(quantidade) || quantidade < 1) quantidade = 1;
-    if (quantidade > nomes.length) quantidade = nomes.length;
-  
-    let passo = 0;
-    const maxPassos = 20;
-    const delayInicial = 100;
-    const nomesTemp = [...nomes];
-    const sorteados = [];
-  
-    const animar = () => {
-      if (passo < maxPassos) {
-        const nomeAleatorio = nomesTemp[Math.floor(Math.random() * nomesTemp.length)];
-        dom.modalTexto.textContent = `🎲 Sorteando: ${nomeAleatorio}...`;
-        passo++;
-        setTimeout(animar, delayInicial + passo * 15);
-      } else {
-        const embaralhados = nomesTemp.sort(() => Math.random() - 0.5);
-        for (let i = 0; i < quantidade; i++) {
-          sorteados.push(embaralhados[i]);
-        }
-  
-        // Remove apenas uma ocorrência de cada nome sorteado
-        sorteados.forEach((sorteado) => {
-          const idx = nomes.indexOf(sorteado);
-          if (idx !== -1) nomes.splice(idx, 1);
-        });
-  
-        atualizarLista();
-        dom.modalTexto.textContent = `🎉 Sorteado(s): ${sorteados.join(", ")}`;
+  if (nomes.length === 0) {
+    alert("A lista de nomes está vazia!");
+    return;
+  }
+
+  let quantidade = parseInt(dom.quantosNomes.value);
+  if (isNaN(quantidade) || quantidade < 1) quantidade = 1;
+  if (quantidade > nomes.length) quantidade = nomes.length;
+
+  let passo = 0;
+  const maxPassos = 20;
+  const delayInicial = 100;
+  const nomesTemp = [...nomes];
+  const sorteados = [];
+
+  const animar = () => {
+    if (passo < maxPassos) {
+      const nomeAleatorio = nomesTemp[Math.floor(Math.random() * nomesTemp.length)];
+      dom.modalTexto.textContent = `🎲 Sorteando: ${nomeAleatorio}...`;
+      passo++;
+      setTimeout(animar, delayInicial + passo * 15);
+    } else {
+      const embaralhados = nomesTemp.sort(() => Math.random() - 0.5);
+      for (let i = 0; i < quantidade; i++) {
+        sorteados.push(embaralhados[i]);
       }
-    };
-  
-    dom.modal.style.display = "flex";
-    dom.modalTexto.textContent = "Preparando o sorteio...";
-    setTimeout(animar, 50);
-  };
-  
-  
-  document.getElementById("fecharModal").addEventListener("click", () => {
-    document.getElementById("resultadoModal").style.display = "none";
-  });
-  
-  window.addEventListener("click", (e) => {
-    const modal = document.getElementById("resultadoModal");
-    if (e.target === modal) {
-      modal.style.display = "none";
+
+      // Remove apenas uma ocorrência de cada nome sorteado
+      sorteados.forEach((sorteado) => {
+        const idx = nomes.indexOf(sorteado);
+        if (idx !== -1) nomes.splice(idx, 1);
+      });
+
+      atualizarLista();
+      dom.modalTexto.textContent = `🎉 Sorteado(s): ${sorteados.join(", ")}`;
     }
-  });
-  
+  };
+
+  dom.modal.style.display = "flex";
+  dom.modalTexto.textContent = "Preparando o sorteio...";
+  setTimeout(animar, 50);
+};
+
+// ==================== Modal ====================
+
+dom.fecharModal.addEventListener("click", () => {
+  dom.modal.style.display = "none";
+});
+
+window.addEventListener("click", (e) => {
+  if (e.target === dom.modal) {
+    dom.modal.style.display = "none";
+  }
+});
+
+// ==================== Importar/Exportar ====================
 
 const importarNomes = () => dom.arquivoInput.click();
 
@@ -165,6 +166,26 @@ const exportarNomes = () => {
 
   URL.revokeObjectURL(url);
 };
+
+// ==================== Tema por Filial ====================
+
+const aplicarTema = (tema) => {
+  document.body.classList.remove("unipro", "arcacenter", "univer");
+  document.body.classList.add(tema);
+  localStorage.setItem("temaSelecionado", tema);
+};
+
+if (dom.themeSelector) {
+  dom.themeSelector.addEventListener("change", (e) => {
+    aplicarTema(e.target.value);
+  });
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const temaSalvo = localStorage.getItem("temaSelecionado") || "unipro";
+    dom.themeSelector.value = temaSalvo;
+    aplicarTema(temaSalvo);
+  });
+}
 
 // ==================== Eventos ====================
 

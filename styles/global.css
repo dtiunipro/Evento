@@ -32,6 +32,11 @@
   box-sizing: border-box;
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--bg-color) transparent;
+}
+
 body {
   height: 100vh;
   color: var(--text-color);
@@ -94,12 +99,10 @@ header {
       text-transform: uppercase;
       color: #fff;
 
-      option{
+      option {
         color: #333;
-
       }
     }
-    
   }
 }
 
@@ -274,9 +277,6 @@ main {
 
     overflow-y: scroll;
 
-    scrollbar-width: thin;
-    scrollbar-color: var(--bg-color) transparent;
-
     ul {
       list-style: none;
 
@@ -327,4 +327,26 @@ footer {
   a {
     color: #333;
   }
+}
+
+@media screen and (max-width: 1200px) {
+  body {
+    overflow: auto;
+  }
+  main {
+    margin-inline: auto;
+    grid-template-areas:
+      "sorteador "
+      "lista"
+      "footer";
+    row-gap: 32px;
+    grid-template-columns: 1fr;
+    grid-auto-flow: column;
+    margin-bottom: 32px;
+  }
+
+footer{
+  grid-area: footer;
+}
+
 }
