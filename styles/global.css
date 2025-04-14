@@ -14,7 +14,7 @@
   --logo: url(../assets/logos/unipro.png);
 }
 
-/* Temas por organização */
+/* Temas por Filial */
 .arcacenter {
   --bg-color: #c60c30;
   --logo: url(../assets/logos/arcacenter.png);
@@ -50,9 +50,15 @@ ul li {
 }
 
 button,
-input {
+input,
+input:focus-visible,
+input::selection {
   border: none;
   outline: 0;
+}
+
+a {
+  text-decoration: none;
 }
 
 .container {
@@ -75,17 +81,36 @@ header {
     height: 80px;
     background: var(--logo) no-repeat left center / contain;
   }
+
+  #theme-list {
+    select#theme {
+      width: 170px;
+      height: 50px;
+      background: transparent;
+      padding-inline: 16px;
+      border: 1px solid white;
+      border-radius: 16px;
+      font: var(--text-input);
+      text-transform: uppercase;
+      color: #fff;
+
+      option{
+        color: #333;
+
+      }
+    }
+    
+  }
 }
 
 /* Main layout */
 main {
-  margin-block: 24px;
   display: grid;
   column-gap: 24px;
   grid-template-columns: 1fr 1fr;
   grid-template-areas: "sorteador lista";
-  grid-auto-flow: row;
-  grid-row: auto;
+  place-items: center;
+  margin-block: 32px;
 
   .content,
   .list-name {
@@ -94,12 +119,13 @@ main {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 16px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    width: 600px;
+    width: 550px;
+    padding-block: 24px;
 
     h1 {
       font: var(--h1);
       text-align: center;
-      padding-block: 24px;
+      padding-bottom: 16px;
     }
   }
 
@@ -107,6 +133,8 @@ main {
     grid-area: sorteador;
 
     .content {
+      padding-block: 32px;
+
       input {
         width: 100%;
         height: 50px;
@@ -144,7 +172,7 @@ main {
         margin-block: 24px;
 
         button {
-          width: 130px;
+          width: 120px;
         }
       }
     }
@@ -152,14 +180,16 @@ main {
 
   .sortear-group {
     display: flex;
+    align-items: center;
     justify-content: space-between;
 
     button {
-      width: calc(100% - 10px);
+      width: calc(100% - 135px);
     }
 
     input[type="number"] {
-      width: 130px;
+      width: 100px;
+      text-align: center;
 
       &::-webkit-outer-spin-button,
       &::-webkit-inner-spin-button {
@@ -168,34 +198,133 @@ main {
     }
   }
 
+  /* Modal Overlay */
+  .modal {
+    display: none; /* começa oculto */
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  /* Conteúdo do Modal */
+  .modal-content {
+    position: relative;
+    background-color: white;
+    padding: 32px;
+    border-radius: 16px;
+    max-width: 600px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+    animation: scaleIn 0.5s ease;
+  }
+
+  .modal-content h2 {
+    font: var(--h1);
+    margin-bottom: 16px;
+  }
+
+  .modal-content p {
+    font: var(--h1);
+  }
+
+  /* Botão de fechar */
+  .close-modal {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    font-size: 32px;
+    color: #333;
+    cursor: pointer;
+  }
+
+  /* Animações */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
   .list-name {
     grid-area: lista;
+    height: 600px;
 
-    ul li {
-      padding-block: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      text-transform: uppercase;
+    overflow-y: scroll;
+
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-color) transparent;
+
+    ul {
       list-style: none;
-      border-bottom: 1px solid var(--bg-color);
 
-      .btnExcluir {
-        width: 30px;
-        height: 30px;
-        background: transparent url(../assets/icons/delete.svg) no-repeat left center / contain;
-        transition: background 0.5s;
+      li:last-child {
+        margin-bottom: 16px;
+        border-bottom: 0;
+      }
 
-        &:hover {
-          cursor: pointer;
-          background: url(../assets/icons/delete_hover.svg) no-repeat left center / contain;
+      li {
+        padding-block: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--bg-color);
+
+        .btnExcluir {
+          width: 30px;
+          height: 30px;
+          background: transparent url(../assets/icons/delete.svg) no-repeat left
+            center / contain;
+          transition: background 0.5s;
+
+          &:hover {
+            cursor: pointer;
+            background: url(../assets/icons/delete_hover.svg) no-repeat left
+              center / contain;
+          }
         }
       }
+    }
+
+    #listaVazia {
+      display: none;
+      color: #333;
+      text-align: center;
+      font: var(--text-sm);
     }
   }
 }
 
-/* Utilitários (Utility-first style) */
-.grid {
-  display: grid;
+footer {
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  font-size: 12px;
+
+  a {
+    color: #333;
+  }
 }

@@ -24,7 +24,7 @@
       <div class="logo"></div>
 
       <div id="theme-list">
-        <select name="theme" id="theme">
+        <select id="theme">
           <option value="unipro">Unipro</option>
           <option value="arcacenter">Arcacenter</option>
           <option value="univer">Univer</option>
@@ -32,7 +32,7 @@
       </div>
     </header>
 
-    <main class="grid container">
+    <main class="container">
       <section class="sorteador">
 
         <div class="content">
@@ -53,7 +53,15 @@
             <button id="btnSortear">Sortear</button>
           </div>
 
-          <div id="resultado">Nome(s) sorteado(s) aparecerá(am) aqui...</div>
+          <!-- Modal de Resultado -->
+        <div id="resultadoModal" class="modal">
+          <div class="modal-content">
+            <span class="close-modal" id="fecharModal">&times;</span>
+            <h2>🎉 Resultado do Sorteio</h2>
+            <p id="resultadoTexto">Nomes sorteados aparecerão aqui...</p>
+          </div>
+        </div>
+
       </div>    
       </section>
 
@@ -64,11 +72,16 @@
 
         <ul id="listaNomes">
         </ul>
+
+         <!-- Mensagem quando a lista estiver vazia -->
+        <span id="listaVazia">A lista está vazia. Adicione nomes!</span>
       </section>
     </main>
    </section>
 
 
   <script src="scripts/index.js"></script>
+
+  <footer>Desenvolvido por: <a href="https://github.com/developer-gpereira" target="_blank">Guilherme</footer>
   </body>
 </html>

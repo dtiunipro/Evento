@@ -2,16 +2,18 @@
 let nomes = [];
 
 const dom = {
-  nomeInput: document.getElementById("nomeInput"),
-  btnAdd: document.getElementById("btnAdd"),
-  btnLimpar: document.getElementById("btnLimpar"),
-  listaNomes: document.getElementById("listaNomes"),
-  btnSortear: document.getElementById("btnSortear"),
-  resultado: document.getElementById("resultado"),
-  quantosNomes: document.getElementById("quantosNomes"),
-  btnImportar: document.getElementById("btnImportar"),
-  btnExportar: document.getElementById("btnExportar"),
-  arquivoInput: document.getElementById("arquivoInput")
+    nomeInput: document.getElementById("nomeInput"),
+    btnAdd: document.getElementById("btnAdd"),
+    btnLimpar: document.getElementById("btnLimpar"),
+    listaNomes: document.getElementById("listaNomes"),
+    btnSortear: document.getElementById("btnSortear"),
+    quantosNomes: document.getElementById("qtnNomes"),
+    btnImportar: document.getElementById("btnImportar"),
+    btnExportar: document.getElementById("btnExportar"),
+    arquivoInput: document.getElementById("arquivoInput"),
+    modal: document.getElementById("resultadoModal"),
+    modalTexto: document.getElementById("resultadoTexto"),
+    fecharModal: document.getElementById("fecharModal")
 };
 
 // ==================== Funções ====================
@@ -30,6 +32,14 @@ const carregarLocalStorage = () => {
 
 const atualizarLista = () => {
   dom.listaNomes.innerHTML = "";
+
+  if (nomes.length === 0) {
+    // Exibe a mensagem de lista vazia
+    document.getElementById("listaVazia").style.display = "block";
+  } else {
+    // Oculta a mensagem e exibe a lista de nomes
+    document.getElementById("listaVazia").style.display = "none";
+  }
 
   nomes.forEach((nome, index) => {
     const li = document.createElement("li");
@@ -61,40 +71,68 @@ const limparLista = () => {
   if (confirm("Tem certeza que deseja limpar a lista?")) {
     nomes = [];
     atualizarLista();
-    dom.resultado.textContent = "Resultado aparecerá aqui...";
     localStorage.removeItem("nomes");
   }
 };
 
+dom.modal.style.display = "none";
+
 const sortearNomes = () => {
-  if (nomes.length === 0) return alert("A lista de nomes está vazia!");
-
-  let quantidade = parseInt(dom.quantosNomes.value) || 1;
-  quantidade = Math.min(quantidade, nomes.length);
-
-  let passo = 0;
-  const maxPassos = 20;
-  const delayInicial = 100;
-  const nomesTemp = [...nomes];
-  const sorteados = [];
-
-  const animar = () => {
-    if (passo < maxPassos) {
-      const nomeAleatorio = nomesTemp[Math.floor(Math.random() * nomesTemp.length)];
-      dom.resultado.textContent = `Sorteando: ${nomeAleatorio}...`;
-      passo++;
-      setTimeout(animar, delayInicial + passo * 15);
-    } else {
-      const embaralhados = nomesTemp.sort(() => Math.random() - 0.5);
-      sorteados.push(...embaralhados.slice(0, quantidade));
-      nomes = nomes.filter((nome) => !sorteados.includes(nome));
-      atualizarLista();
-      dom.resultado.textContent = `🎉 Nomes sorteados: ${sorteados.join(", ")}`;
+    if (nomes.length === 0) {
+      alert("A lista de nomes está vazia!");
+      return;
     }
+  
+    let quantidade = parseInt(dom.quantosNomes.value);
+    if (isNaN(quantidade) || quantidade < 1) quantidade = 1;
+    if (quantidade > nomes.length) quantidade = nomes.length;
+  
+    let passo = 0;
+    const maxPassos = 20;
+    const delayInicial = 100;
+    const nomesTemp = [...nomes];
+    const sorteados = [];
+  
+    const animar = () => {
+      if (passo < maxPassos) {
+        const nomeAleatorio = nomesTemp[Math.floor(Math.random() * nomesTemp.length)];
+        dom.modalTexto.textContent = `🎲 Sorteando: ${nomeAleatorio}...`;
+        passo++;
+        setTimeout(animar, delayInicial + passo * 15);
+      } else {
+        const embaralhados = nomesTemp.sort(() => Math.random() - 0.5);
+        for (let i = 0; i < quantidade; i++) {
+          sorteados.push(embaralhados[i]);
+        }
+  
+        // Remove apenas uma ocorrência de cada nome sorteado
+        sorteados.forEach((sorteado) => {
+          const idx = nomes.indexOf(sorteado);
+          if (idx !== -1) nomes.splice(idx, 1);
+        });
+  
+        atualizarLista();
+        dom.modalTexto.textContent = `🎉 Sorteado(s): ${sorteados.join(", ")}`;
+      }
+    };
+  
+    dom.modal.style.display = "flex";
+    dom.modalTexto.textContent = "Preparando o sorteio...";
+    setTimeout(animar, 50);
   };
-
-  animar();
-};
+  
+  
+  document.getElementById("fecharModal").addEventListener("click", () => {
+    document.getElementById("resultadoModal").style.display = "none";
+  });
+  
+  window.addEventListener("click", (e) => {
+    const modal = document.getElementById("resultadoModal");
+    if (e.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+  
 
 const importarNomes = () => dom.arquivoInput.click();
 
