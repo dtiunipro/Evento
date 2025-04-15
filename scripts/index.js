@@ -123,7 +123,7 @@ const sortearNomes = () => {
       ultimosSorteados.unshift(...sorteados);
       atualizarLista();
       atualizarUltimosSorteados();
-      dom.modalTexto.textContent = `🎉 Sorteado(s): ${sorteados.join(", ")}`;
+      dom.modalTexto.textContent = `${sorteados.join(", ")}`;
     }
   };
 
