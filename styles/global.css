@@ -1,8 +1,8 @@
 :root {
   /* Typography */
   --font-family: "Inter", sans-serif;
-  --font-size-base: clamp(1rem, 1.2vw, 1.2rem);
-  --h1: 800 clamp(1.2rem, 1.8vw, 1.5rem) / 135% var(--font-family);
+  --font-size-base: clamp(1rem, 1.3vw, 1.1rem);
+  --h1: 800 clamp(1rem, 1.8vw, 1.5rem) / 135% var(--font-family);
   --text-input: 600 var(--font-size-base) / 140% var(--font-family);
   --text: 400 var(--font-size-base) / 140% var(--font-family);
   --text-sm: 400 clamp(0.875rem, 1.1vw, 1rem) / 160% var(--font-family);
@@ -168,7 +168,7 @@ main {
 
       button {
         height: 70px;
-        padding: 16px;
+        padding: 8px;
         border-radius: 16px;
         background: var(--bg-color);
         color: #fff;
