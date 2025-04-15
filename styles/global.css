@@ -395,7 +395,7 @@ footer {
           margin-block: 24px;
 
           button {
-            width: 6rem;
+            width: 5rem;
             font: var(--text-input);
           }
         }
