@@ -1,5 +1,5 @@
 // ==================== Variáveis Globais ====================
-let nomes = [];
+let nomes = [], ultimosSorteados = [];
 
 const dom = {
   nomeInput: document.getElementById("nomeInput"),
@@ -15,31 +15,47 @@ const dom = {
   modalTexto: document.getElementById("resultadoTexto"),
   fecharModal: document.getElementById("fecharModal"),
   listaVazia: document.getElementById("listaVazia"),
-  themeSelector: document.getElementById("theme")
+  ultimosSorteadosLista: document.getElementById("ultimosSorteadosLista"),
+  listaVaziaSorteados: document.getElementById("listaVaziaSorteados"),
+  selectTheme: document.getElementById("theme")
 };
 
-// ==================== Funções ====================
+// ==================== Funções de Tema ====================
+const aplicarTema = (tema) => {
+  document.body.className = "";
+  document.body.classList.add(tema);
+  localStorage.setItem("temaSelecionado", tema);
+};
 
+dom.selectTheme.addEventListener("change", () => aplicarTema(dom.selectTheme.value));
+
+const carregarTemaSalvo = () => {
+  const temaSalvo = localStorage.getItem("temaSelecionado") || "unipro";
+  dom.selectTheme.value = temaSalvo;
+  aplicarTema(temaSalvo);
+};
+
+// ==================== LocalStorage ====================
 const salvarLocalStorage = () => {
   localStorage.setItem("nomes", JSON.stringify(nomes));
+  localStorage.setItem("ultimosSorteados", JSON.stringify(ultimosSorteados));
 };
 
 const carregarLocalStorage = () => {
-  const salvos = localStorage.getItem("nomes");
-  if (salvos) {
-    nomes = JSON.parse(salvos);
-    atualizarLista();
-  }
+  nomes = JSON.parse(localStorage.getItem("nomes")) || [];
+  ultimosSorteados = JSON.parse(localStorage.getItem("ultimosSorteados")) || [];
+  atualizarLista();
+  atualizarUltimosSorteados();
+  carregarTemaSalvo();
 };
 
+// ==================== Lista de Nomes ====================
 const atualizarLista = () => {
   dom.listaNomes.innerHTML = "";
 
-  if (nomes.length === 0) {
-    dom.listaVazia.style.display = "block";
-  } else {
-    dom.listaVazia.style.display = "none";
-  }
+  nomes.length === 0
+    ? dom.listaVazia.style.display = "block"
+    : dom.listaVazia.style.display = "none";
 
   nomes.forEach((nome, index) => {
     const li = document.createElement("li");
@@ -61,7 +77,6 @@ window.removerNome = (index) => {
 const adicionarNome = () => {
   const novoNome = dom.nomeInput.value.trim();
   if (!novoNome) return alert("Por favor, digite um nome válido!");
-
   nomes.push(novoNome);
   dom.nomeInput.value = "";
   atualizarLista();
@@ -75,13 +90,12 @@ const limparLista = () => {
   }
 };
 
+
 dom.modal.style.display = "none";
 
+// ==================== Sorteio ====================
 const sortearNomes = () => {
-  if (nomes.length === 0) {
-    alert("A lista de nomes está vazia!");
-    return;
-  }
+  if (nomes.length === 0) return alert("A lista de nomes está vazia!");
 
   let quantidade = parseInt(dom.quantosNomes.value);
   if (isNaN(quantidade) || quantidade < 1) quantidade = 1;
@@ -103,15 +117,12 @@ const sortearNomes = () => {
       const embaralhados = nomesTemp.sort(() => Math.random() - 0.5);
       for (let i = 0; i < quantidade; i++) {
         sorteados.push(embaralhados[i]);
+        const idx = nomes.indexOf(embaralhados[i]);
+        if (idx !== -1) nomes.splice(idx, 1); // Remove só uma ocorrência
       }
-
-      // Remove apenas uma ocorrência de cada nome sorteado
-      sorteados.forEach((sorteado) => {
-        const idx = nomes.indexOf(sorteado);
-        if (idx !== -1) nomes.splice(idx, 1);
-      });
-
+      ultimosSorteados.unshift(...sorteados);
       atualizarLista();
+      atualizarUltimosSorteados();
       dom.modalTexto.textContent = `🎉 Sorteado(s): ${sorteados.join(", ")}`;
     }
   };
@@ -121,33 +132,43 @@ const sortearNomes = () => {
   setTimeout(animar, 50);
 };
 
-// ==================== Modal ====================
+// ==================== Últimos Sorteados ====================
+const atualizarUltimosSorteados = () => {
+  dom.ultimosSorteadosLista.innerHTML = "";
 
-dom.fecharModal.addEventListener("click", () => {
-  dom.modal.style.display = "none";
-});
+  ultimosSorteados.length === 0
+    ? dom.listaVaziaSorteados.style.display = "block"
+    : dom.listaVaziaSorteados.style.display = "none";
 
-window.addEventListener("click", (e) => {
-  if (e.target === dom.modal) {
-    dom.modal.style.display = "none";
-  }
-});
+  ultimosSorteados.forEach((nome, index) => {
+    const li = document.createElement("li");
+    li.innerHTML = `
+      ${index + 1}. ${nome}
+      <button class="btnExcluir" onclick="removerUltimoSorteado(${index})"></button>
+    `;
+    dom.ultimosSorteadosLista.appendChild(li);
+  });
 
-// ==================== Importar/Exportar ====================
+  salvarLocalStorage();
+};
 
+window.removerUltimoSorteado = (index) => {
+  ultimosSorteados.splice(index, 1);
+  atualizarUltimosSorteados();
+};
+
+// ==================== Importa/Exporta ====================
 const importarNomes = () => dom.arquivoInput.click();
 
 const processarArquivoImportado = (event) => {
   const file = event.target.files[0];
   if (!file) return;
-
   const reader = new FileReader();
   reader.onload = (e) => {
     const conteudo = e.target.result;
     const novosNomes = conteudo.includes(",")
       ? conteudo.split(",").map(n => n.trim())
       : conteudo.split("\n").map(n => n.trim());
-
     nomes.push(...novosNomes.filter(n => n));
     atualizarLista();
   };
@@ -158,51 +179,22 @@ const exportarNomes = () => {
   const conteudo = nomes.join("\n");
   const blob = new Blob([conteudo], { type: "text/plain" });
   const url = URL.createObjectURL(blob);
-
   const a = document.createElement("a");
   a.href = url;
   a.download = "lista_nomes.txt";
   a.click();
-
   URL.revokeObjectURL(url);
 };
 
-// ==================== Tema por Filial ====================
-
-const aplicarTema = (tema) => {
-  document.body.classList.remove("unipro", "arcacenter", "univer");
-  document.body.classList.add(tema);
-  localStorage.setItem("temaSelecionado", tema);
-};
-
-if (dom.themeSelector) {
-  dom.themeSelector.addEventListener("change", (e) => {
-    aplicarTema(e.target.value);
-  });
-
-  window.addEventListener("DOMContentLoaded", () => {
-    const temaSalvo = localStorage.getItem("temaSelecionado") || "unipro";
-    dom.themeSelector.value = temaSalvo;
-    aplicarTema(temaSalvo);
-  });
-}
-
 // ==================== Eventos ====================
-
 window.onload = carregarLocalStorage;
-
 dom.btnAdd.addEventListener("click", adicionarNome);
 dom.btnLimpar.addEventListener("click", limparLista);
 dom.btnSortear.addEventListener("click", sortearNomes);
-
-dom.nomeInput.addEventListener("keyup", (e) => {
-  if (e.key === "Enter") adicionarNome();
-});
-
-dom.quantosNomes.addEventListener("keyup", (e) => {
-  if (e.key === "Enter") sortearNomes();
-});
-
+dom.nomeInput.addEventListener("keyup", (e) => e.key === "Enter" && adicionarNome());
+dom.quantosNomes.addEventListener("keyup", (e) => e.key === "Enter" && sortearNomes());
 dom.btnImportar.addEventListener("click", importarNomes);
 dom.arquivoInput.addEventListener("change", processarArquivoImportado);
 dom.btnExportar.addEventListener("click", exportarNomes);
+dom.fecharModal.addEventListener("click", () => dom.modal.style.display = "none");
+window.addEventListener("click", (e) => e.target === dom.modal && (dom.modal.style.display = "none"));
