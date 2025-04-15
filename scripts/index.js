@@ -85,8 +85,11 @@ const adicionarNome = () => {
 const limparLista = () => {
   if (confirm("Tem certeza que deseja limpar a lista?")) {
     nomes = [];
+    ultimosSorteados = [];
     atualizarLista();
+    atualizarUltimosSorteados();
     localStorage.removeItem("nomes");
+    localStorage.removeItem("ultimosSorteados");
   }
 };
 
