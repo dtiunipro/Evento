@@ -1,7 +1,7 @@
 :root {
   /* Typography */
   --font-family: "Inter", sans-serif;
-  --font-size-base: clamp(1rem, 1.3vw, 1.1rem);
+  --font-size-base: clamp(.9rem, 1vw + 1rem, 1.1rem);
   --h1: 800 clamp(1rem, 1.8vw, 1.5rem) / 135% var(--font-family);
   --text-input: 600 var(--font-size-base) / 140% var(--font-family);
   --text: 400 var(--font-size-base) / 140% var(--font-family);
@@ -88,7 +88,7 @@ header {
 
   #theme-list {
     select#theme {
-      width: 170px;
+      width: 180px;
       height: 50px;
       background: transparent;
       padding-inline: 16px;
@@ -98,8 +98,13 @@ header {
       text-transform: uppercase;
       color: #fff;
 
+
       option {
         color: #333;
+      }
+
+      &.active{
+        margin-top: 10px;
       }
     }
   }
