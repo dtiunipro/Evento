@@ -1,10 +1,11 @@
 :root {
   /* Typography */
   --font-family: "Inter", sans-serif;
-  --h1: 800 24px/135% var(--font-family);
-  --text-input: 600 16px/140% var(--font-family);
-  --text: 400 16px/140% var(--font-family);
-  --text-sm: 400 14px/160% var(--font-family);
+  --font-size-base: clamp(1rem, 1.2vw, 1.2rem);
+  --h1: 800 clamp(1.2rem, 1.8vw, 1.5rem) / 135% var(--font-family);
+  --text-input: 600 var(--font-size-base) / 140% var(--font-family);
+  --text: 400 var(--font-size-base) / 140% var(--font-family);
+  --text-sm: 400 clamp(0.875rem, 1.1vw, 1rem) / 160% var(--font-family);
 
   /* Cores padrão */
   --bg-color: #0088cc;
@@ -32,6 +33,7 @@
   box-sizing: border-box;
   scrollbar-width: thin;
   scrollbar-color: var(--bg-color) transparent;
+  transition: scrollbar-color 0.5s;
 }
 
 body {
@@ -39,7 +41,6 @@ body {
   color: var(--text-color);
   font: var(--text);
   overflow: hidden;
-  transition: background 0.5s;
   font-optical-sizing: auto;
 }
 
@@ -77,6 +78,7 @@ header {
   justify-content: space-between;
   align-items: center;
   background: var(--bg-color);
+  transition: background 0.5s;
 
   .logo {
     width: 150px;
@@ -118,6 +120,9 @@ main {
 
   .content,
   .list-name {
+    border: 1px solid var(--bg-color);
+    transition: border-color 0.5s;
+
     padding-inline: 16px;
     margin-inline: auto;
     background: rgba(255, 255, 255, 0.1);
@@ -142,6 +147,7 @@ main {
 
     .content {
       padding-block: 32px;
+      height: 359px;
 
       input {
         width: 100%;
@@ -152,6 +158,8 @@ main {
         font: var(--text-input);
         text-transform: uppercase;
         color: #333;
+        border: 1px solid var(--bg-color);
+        transition: border-color 0.5s;
       }
 
       #arquivoInput {
@@ -324,7 +332,7 @@ main {
 
   .list-name {
     grid-area: lista;
-    height: 765px;
+    height: 750px;
 
     ul {
       height: 640px;
@@ -333,7 +341,7 @@ main {
 }
 
 footer {
-  position: absolute;
+  position: relative;
   bottom: 0;
   right: 16px;
   font-size: 12px;
@@ -360,7 +368,32 @@ footer {
     margin-bottom: 32px;
   }
 
-  footer {
-    position: relative;
+}
+
+@media screen and (max-width: 768px) {
+  :root{
+    --font-size-base: clamp(.9rem, 1.2vw, 1rem);
+  }
+  main {
+    .content,
+    .list-name {
+      max-width: 30rem;
+    }
+
+    .sorteador {
+      .content {
+        .btn-group {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-block: 24px;
+
+          button {
+            width: 6rem;
+            font: var(--text-input);
+          }
+        }
+      }
+    }
   }
 }
